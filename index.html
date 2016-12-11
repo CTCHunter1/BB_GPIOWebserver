@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Timed Digital IO Control with BeagleBone Black</title>
+    <script src = "/socket.io/socket.io.js" ></script>
+    <script>
+        // Establishing connection with server
+        var socket = io.connect();
+        socket.on('updateStatus', updateStatus);
+        
+        // Changes the led state, called by the on/off buttons
+        function changeState(valvenum, state){
+            if (state==1){
+                // Emit message changing the state to 1
+                socket.emit('changeState', '{"duration":"'+ document.getElementById("ontime" + valvenum).value + 
+                   '","valvenum":' + valvenum +'}');
+            }
+            else if (state==0){
+                // Emit message changing the state to 0
+                socket.emit('changeState', '{"duration":"0"' + ',"valvenum":' + valvenum + '}');
+            }
+        }
+        
+        // callback from the server to update UI
+        function updateStatus(data) {
+            var newData = JSON.parse(data);
+            
+            var outputStatus = document.getElementById("outputStatus" + newData.valvenum);
+            
+            if (newData.state == 1) {
+                outputStatus.innerHTML = "Status: On";
+                outputStatus.style = "color:red";
+            } else if (newData.state == 0) {
+                outputStatus.innerHTML = "Status: Off";
+                outputStatus.style = "color:green";
+            }
+        }
+    </script>
+</head>
+    <h2>Lane 1</h2>
+    <span>Valve 1:</span> 
+    <span id="outputStatus0">Status</span> <br>
+    On Time (s): <input type="number" id="ontime0" style="width: 5em">
+    <button type="button" onclick="changeState(0, 1);">ON</button>
+    <button type="button" onclick="changeState(0, 0);">OFF</button>
+    <div style="height: 4px;"> </div>
+    <span>Valve 2:</span> 
+    <span id="outputStatus1">Status</span> <br>
+    On Time (s): <input type="number" id="ontime1" style="width: 5em">
+    <button type="button" onclick="changeState(1, 1);">ON</button>
+    <button type="button" onclick="changeState(1, 0);">OFF</button>
+    
+    <h2>Lane 2</h2>
+    <span>Valve 3:</span> 
+    <span id="outputStatus2">Status</span> <br>
+    On Time (s): <input type="number" id="ontime2" style="width: 5em">
+    <button type="button" onclick="changeState(2, 1);">ON</button>
+    <button type="button" onclick="changeState(2, 0);">OFF</button>
+    <div style="height: 4px;"> </div>
+    <span>Valve 4:</span> 
+    <span id="outputStatus3">Status</span> <br>
+    On Time (s): <input type="number" id="ontime3" style="width: 5em">
+    <button type="button" onclick="changeState(3, 1);">ON</button>
+    <button type="button" onclick="changeState(3, 0);">OFF</button>
+</div>
+</body>
+</html>
+
